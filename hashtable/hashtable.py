@@ -1,3 +1,11 @@
+# import sys
+# sys.path.append('C:\\Users\\dougcohen\\Repos\\CS\\cs-module-project-hash-tables')  # Adds higher directory to python modules path.
+
+# from linked_list import LinkedList
+
+
+from linked_list import LinkedList
+
 class HashTableEntry:
     """
     Linked List hash table key/value pair
@@ -23,8 +31,9 @@ class HashTable:
     def __init__(self, capacity):
         # Your code here
         
-        self.table = [None] * capacity
+        self.storage = [LinkedList()] * capacity
         self.capacity = capacity
+        self.number_of_records = 0
 
 
     def get_num_slots(self):
@@ -37,7 +46,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -46,7 +55,7 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        return self.number_of_records / self.capacity
 
 
     def fnv1(self, key):
@@ -89,10 +98,19 @@ class HashTable:
         Implement this.
         """
         # get the index into the hash table to store "value"
-        i = self.hash_index(key)
+        index = self.hash_index(key)
+        cur = self.storage[index].head
         
-        # Store "value" at that index
-        self.table[i] = value
+        while cur:
+            if cur.key == key:
+                cur.value = value
+                
+            cur = cur.next
+        
+        entry = HashTableEntry(key, value)
+        self.storage[index].insert_at_head(entry)
+        self.number_of_records += 1
+        
         
 
     def delete(self, key):
@@ -103,31 +121,40 @@ class HashTable:
 
         Implement this.
         """
-        # Find the index of the given key in the table
-        i = self.hash_index(key)
+        # # Find the index of the given key in the table
+        # i = self.hash_index(key)
         
-        # Store its value to be returned later
-        deleted_value = self.table[i]
+        # # Store its value to be returned later
+        # deleted_value = self.table[i]
         
-        # Switch value at that index location to "None"
-        self.table[i] = None
+        # # Switch value at that index location to "None"
+        # self.table[i] = None
         
-        return deleted_value
+        # return deleted_value
+        
+        self.put(key, None)
+        self.number_of_records -= 1
 
 
     def get(self, key):
         """
         Retrieve the value stored with the given key.
 
+
         Returns None if the key is not found.
 
         Implement this.
         """
         # Find the index of the given key in the table
-        i = self.hash_index(key)
+        index = self.hash_index(key)
+        cur = self.storage[index].head
         
-        # Return the value at that index location
-        return self.table[i]
+        while cur:
+            if cur.key == key:
+                return cur.value
+            cur = cur.next
+            
+        return None
 
 
     def resize(self, new_capacity):
@@ -137,8 +164,20 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        if self.get_load_factor() >= 0.7:
+            old_storage = self.storage
+            self.storage = [LinkedList()] * new_capacity
+            for record in old_storage:
+                cur = record.head
+                while cur:
+                    self.put(cur.key, cur.value)
+                    cur = cur.next
+                    
+            self.capacity = new_capacity
 
+# ht = HashTable(8)
+# ht.put('Doug', 28)
+# print(ht.storage[0].head.key)
 
 
 if __name__ == "__main__":
@@ -156,6 +195,11 @@ if __name__ == "__main__":
     ht.put("line_10", "Long time the manxome foe he sought--")
     ht.put("line_11", "So rested he by the Tumtum tree")
     ht.put("line_12", "And stood awhile in thought.")
+    
+    # print(ht.get('line_2'))
+    # print(ht.get('line_5'))
+    # print(ht.get('line_8'))
+
 
     print("")
 
