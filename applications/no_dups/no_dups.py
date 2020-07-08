@@ -1,5 +1,18 @@
 def no_dups(s):
-    # Your code here
+    
+    # split the string into a list of words
+    words = s.split()
+    
+    # get unique words with no duplicates by putting in a set
+    unique_words = set(words)
+    
+    # sort the unique words by their original positions
+    sorted_words = sorted(unique_words, key=words.index)
+    
+    # join words into back into one string with no duplicates
+    no_dups = " ".join(sorted_words)
+
+    return no_dups
 
 
 
